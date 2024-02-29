@@ -18,6 +18,7 @@ const Frame2 = () => {
       <View style={styles.optionContainer}>
         <Text style={styles.optionText}>Lower or Higher?</Text>
         
+        <View style={styles.plusOrSubstract}>
         <View style={styles.lowerContainer}>
         <Button style={styles.lowerButtton} title="-"></Button>
         </View>
@@ -25,7 +26,7 @@ const Frame2 = () => {
         <View style={styles.higherContainer}>
         <Button style={styles.higherButton} title="+"></Button>
         </View>
-        
+        </View>
       </View>
 
       <ScrollView style={styles.historyGuess}>
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     paddingTop: 70,
     paddingRight: 52,
     paddingLeft: 52,
+    
   },
   headerContainer: {
     alignItems: "center",
@@ -73,12 +75,39 @@ const styles = StyleSheet.create({
   optionContainer:{
     backgroundColor:"#F56C40",
     
-    width: 350,
-    height:200,
-    marginRight:500
+    width:"100%",
+    height:"25%",
+    marginTop:20,
+    display:"flex",
+    borderRadius:30
+  
+    
+  },
+  optionText:{
+    
+    justifyContent:"center",
+    paddingLeft:"32%" ,
+    fontWeight:"bold"
+   },
+  plusOrSubstract:{
+    display:"flex",
+    justifyContent:"space-evenly",
+    alignItems:"center",
+    flexDirection:"row",
+    paddingHorizontal:20,
+    height:60,
+    width:"90%",
+    
+
+  },
+  higherButton:{
+    backgroundColor:"#28a745"
   },
   historyGuess:{
-    backgroundColor:"#EFF396"
+    backgroundColor:"#EFF396",
+    marginTop:30,
+    marginBottom:20,
+    borderRadius:30
   }
 
 
