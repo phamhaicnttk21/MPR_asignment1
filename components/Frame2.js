@@ -33,12 +33,14 @@ const Frame2 = () => {
       Toast.show({
         type: "success",
         text1: "Excellent",
+        backgroundColor: "#28a745",
       });
     } else {
       // User made the wrong choice
       Toast.show({
         type: "error",
         text1: "Wrong option. Please try again",
+        backgroundColor: "#FFD700",
       });
     }
   };
@@ -84,7 +86,9 @@ const Frame2 = () => {
         contentContainerStyle={styles.historyContainer}
       >
         {opponentGuessHistory.map((guess, index) => (
-          <Text key={index}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
+          <View key={index} style={styles.historyEntry}>
+            <Text key={index}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -164,6 +168,23 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 20,
     borderRadius: 30,
+  },
+  historyGuess: {
+    backgroundColor: "#EFF396",
+    marginTop: 30,
+    marginBottom: 20,
+    borderRadius: 30, // Set the desired border-radius
+    overflow: "hidden", // Clip content outside the border-radius
+  },
+  historyContainer: {
+    alignItems: "center", // Center the content horizontally
+  },
+  historyEntry: {
+    backgroundColor: '#ffffff', // Background color for each history entry
+    borderRadius: 15, // Set the desired border-radius for each entry
+    padding: 10, // Add padding for better aesthetics
+    marginVertical: 5, // Add vertical margin between entries
+    width: '80%', // Set a specific width for each entry
   },
 });
 

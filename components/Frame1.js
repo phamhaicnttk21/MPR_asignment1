@@ -2,6 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { View, StyleSheet, Text, Image, Button, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+
 const Frame1 = () => {
   const [number, setNumber] = useState("");
 
@@ -28,6 +30,10 @@ const Frame1 = () => {
     }
     setNumber(newText);
   };
+
+  
+  
+  
 
   return (
     <View style={styles.container}>
