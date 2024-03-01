@@ -1,44 +1,48 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  Button,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { ToastMessage } from "react-native-toast-message";
+import React, { useState, useRef, useEffect } from "react";
+import { View, StyleSheet, Text, Button, ScrollView } from "react-native";
+import Toast, { ToastMessage } from "react-native-toast-message";
+import { useRoute } from "@react-navigation/native";
 
 const Frame2 = () => {
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
-  
+  const [opponentGuessHistory, setOpponentGuessHistory] = useState([]);
+  const scrollViewRef = useRef();
+  const route = useRoute();
+  const { userEnteredNumber } = route.params;
+
+  useEffect(() => {
+    // Scroll to the end of the ScrollView when the component mounts
+    scrollViewRef.current.scrollToEnd({ animated: true });
+  }, [opponentGuessHistory]);
+
   // handle random number
   function generateRandomNumber() {
     return Math.floor(Math.random() * 99) + 1;
   }
 
-// handle toast  message
+  // handle toast message
   const handleUserInput = (isHigher) => {
-    if ((isHigher && randomNumber > userEnteredNumber) || (!isHigher && randomNumber < userEnteredNumber)) {
+    setOpponentGuessHistory((prevHistory) => [...prevHistory, randomNumber]);
+
+    if (
+      (isHigher && randomNumber > userEnteredNumber) ||
+      (!isHigher && randomNumber < userEnteredNumber)
+    ) {
       // User made the correct choice
-      ToastMessage.show({
+      Toast.show({
         type: "success",
         text1: "Excellent",
       });
     } else {
       // User made the wrong choice
-      ToastMessage.show({
+      Toast.show({
         type: "error",
         text1: "Wrong option. Please try again",
       });
     }
+  };
 
-
- 
   return (
     <View style={styles.container}>
       <StatusBar barStyle='light-content' backgroundColor='white' />
@@ -57,29 +61,36 @@ const Frame2 = () => {
 
         <View style={styles.plusOrSubstract}>
           <View style={styles.lowerContainer}>
-            <Button style={styles.lowerButtton} title='-' onPress={handleUserInput(false)}></Button>
+            <Button
+              style={styles.lowerButtton}
+              title='-'
+              onPress={() => handleUserInput(false)}
+            ></Button>
           </View>
 
           <View style={styles.higherContainer}>
-            <Button style={styles.higherButton} title='+' onPress={handleUserInput(false)}></Button>
+            <Button
+              style={styles.higherButton}
+              title='+'
+              onPress={() => handleUserInput(true)}
+            ></Button>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.historyGuess} contentContainerStyle>
-        <Text>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.historyGuess}
+        contentContainerStyle={styles.historyContainer}
+      >
+        {opponentGuessHistory.map((guess, index) => (
+          <Text key={index}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
+        ))}
       </ScrollView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -155,4 +166,5 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
 });
+
 export default Frame2;

@@ -7,7 +7,11 @@ const Frame1 = () => {
 
   const navigation = useNavigation();
   let confirm = () => {
-    navigation.navigate("Frame2");
+    if (number) {
+      navigation.navigate("Frame2", { userEnteredNumber: number });
+    } else {
+      alert("Please enter a number before confirming.");
+    }
   };
 
   const onChanged = (text) => {

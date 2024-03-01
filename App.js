@@ -8,14 +8,14 @@ import Frame1 from "./components/Frame1";
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
-    <View style={styles.container}>
+    // <View style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator initialRoutename='Frame1'>
           <Stack.Screen name='Frame1' component={Frame1} />
           <Stack.Screen name="Frame2" component={Frame2} />
         </Stack.Navigator>
       </NavigationContainer>
-    </View>
+    // </View>
   );
 }
 
