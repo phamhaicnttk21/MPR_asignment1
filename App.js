@@ -1,17 +1,21 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 
-import Frame2 from "./components/Frame2";
 import { NavigationContainer } from "@react-navigation/native";
-
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Frame2 from "./components/Frame2";
+import Frame1 from "./components/Frame1";
 export default function App() {
+  const Stack = createNativeStackNavigator();
   return (
-    
     <View style={styles.container}>
-      
-      <Frame2/>
+      <NavigationContainer>
+        <Stack.Navigator initialRoutename='Frame1'>
+          <Stack.Screen name='Frame1' component={Frame1} />
+          <Stack.Screen name="Frame2" component={Frame2} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </View>
-    
   );
 }
 
