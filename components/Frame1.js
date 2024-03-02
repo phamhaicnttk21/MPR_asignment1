@@ -1,21 +1,47 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Image, Button, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  Button,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Audio } from "expo-av";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Frame1 = () => {
+  // State to manage the user-entered number
   const [number, setNumber] = useState("");
 
-  const navigation = useNavigation();
+  // State to manage the mute/unmute status
   const [isMuted, setIsMuted] = useState(false);
+
+  // Create an Audio.Sound object for background music
   const soundObject = new Audio.Sound();
 
+  // Access the navigation object for navigating to Frame2
+  const navigation = useNavigation();
+
+  // Function to toggle mute/unmute
   const toggleMute = async () => {
-    await soundObject.setIsMutedAsync(!isMuted);
+    if (isMuted) {
+      // If currently muted, play the background music
+      await soundObject.playAsync();
+    } else {
+      // If currently unmuted, stop the background music
+      await soundObject.stopAsync();
+    }
+
+    // Toggle the mute status
     setIsMuted(!isMuted);
   };
-  let confirm = () => {
+
+  // Function to navigate to Frame2 when the user confirms their number
+  const confirm = () => {
     if (number) {
       navigation.navigate("Frame2", { userEnteredNumber: number });
     } else {
@@ -23,6 +49,7 @@ const Frame1 = () => {
     }
   };
 
+  // Function to handle changes in the TextInput
   const onChanged = (text) => {
     let newText = "";
     let numbers = "0123456789";
@@ -31,49 +58,47 @@ const Frame1 = () => {
       if (numbers.indexOf(text[i]) > -1) {
         newText = newText + text[i];
       } else {
-        // your call back function
-        alert("please enter numbers only");
+        alert("Please enter numbers only");
       }
     }
+
+    // Update the user-entered number
     setNumber(newText);
   };
 
   useEffect(() => {
     // Load and play background music when the component mounts
     const playBackgroundMusic = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../assets/river.mp3")
-      );
-      await sound.setIsLoopingAsync(true);
-      await sound.playAsync();
+      await soundObject.loadAsync(require("../assets/river.mp3"));
+      await soundObject.setIsLoopingAsync(true);
+      await soundObject.setIsMutedAsync(isMuted);
+      await soundObject.playAsync();
     };
 
     playBackgroundMusic();
 
     // Stop the music when the component is unmounted
     return async () => {
-      const sound = await Audio.Sound.createAsync(
-        require("../assets/river.mp3")
-      );
-      await sound.stopAsync();
+      await soundObject.stopAsync();
     };
-  }, []);
+  }, [isMuted]); // Include isMuted in the dependency array to react to changes in mute status
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle='light-content' backgroundColor='white' />
 
-      {/* header container */}
+      {/* Header container */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerContent}>Mini-Game App</Text>
         <Image style={styles.image} source={require("../assets/game.png")} />
       </View>
 
-      {/* text container */}
+      {/* Text container */}
       <View style={styles.textContainer}>
         <Text style={styles.textContent}>Enter Your Number:</Text>
       </View>
 
+      {/* Input container */}
       <View style={styles.enterContainer}>
         <TextInput
           onChangeText={(text) => onChanged(text)}
@@ -81,22 +106,22 @@ const Frame1 = () => {
           value={number}
           keyboardType='numeric'
           maxLength={2}
-        ></TextInput>
+        />
       </View>
+
+      {/* Note container */}
       <View style={styles.noteContainer}>
-        <Text style={styles.note}>*Note: number in range from 01 to 99</Text>
+        <Text style={styles.note}>
+          *Note: number in the range from 01 to 99
+        </Text>
       </View>
 
-      {/* Confirm */}
+      {/* Confirm button */}
       <View style={styles.button}>
-        <Button
-          onPress={() => confirm()}
-          title='Confirm'
-          style={styles.confirm}
-        ></Button>
+        <Button onPress={() => confirm()} title='Confirm' />
       </View>
 
-      {/* disguised */}
+      {/* Disguised image container */}
       <View style={styles.disguisedContainer}>
         <Image
           source={require("../assets/disguised.png")}
@@ -104,11 +129,18 @@ const Frame1 = () => {
         />
       </View>
 
-      <View style = {styles.muteContainer}>
-      <Image
-          source={require("../assets/mute.png")}
-          style={styles.mute}
-        />
+      {/* Mute icon container */}
+      <View style={styles.muteContainer}>
+        <TouchableOpacity onPress={toggleMute}>
+          <Image
+            source={
+              isMuted
+                ? require("../assets/mute.png")
+                : require("../assets/mute.png")
+            }
+            style={styles.mute}
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -118,8 +150,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
+
     width: "100%",
-    height: "100%", // Background color for the entire screen
+    height: "100%",
     paddingTop: StatusBar.currentHeight || 0,
     paddingTop: 70,
     paddingRight: 52,
@@ -158,7 +191,6 @@ const styles = StyleSheet.create({
   textContent: {
     fontWeight: "bold",
     fontSize: 16,
-    // position:'absolute'
   },
   enterContainer: {
     alignItems: "center",
@@ -170,9 +202,16 @@ const styles = StyleSheet.create({
     marginLeft: 120,
     marginTop: 30,
   },
+  input: {
+    color: "#000000",
+    fontSize: 16,
+  },
+  noteContainer: {
+    marginTop: 10,
+    alignItems: "center",
+  },
   note: {
     color: "white",
-    marginLeft: 40,
   },
   button: {
     marginTop: 70,
@@ -180,14 +219,29 @@ const styles = StyleSheet.create({
   disguisedContainer: {
     alignItems: "center",
     justifyContent: "center",
-    width: 150, // Set a specific width for the image
-    height: 150, // Set a specific height for the image
+    width: 150,
+    height: 150,
     alignSelf: "center",
     marginTop: 20,
   },
   disguised: {
     width: 200,
     height: 200,
+  },
+  muteContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+  },
+  mute: {
+    width: 30,
+    height: 30,
+  },
+  muteContainer: {
+    flexDirection: "row",
+    width: 20,
+    height: 20,
+    borderRightColor: "white",
   },
 });
 
