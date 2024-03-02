@@ -3,13 +3,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Text, Button, ScrollView } from "react-native";
 import Toast, { ToastMessage } from "react-native-toast-message";
 import { useRoute } from "@react-navigation/native";
-
+import { Audio } from "expo-av";
 const Frame2 = () => {
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
   const [opponentGuessHistory, setOpponentGuessHistory] = useState([]);
   const scrollViewRef = useRef();
   const route = useRoute();
   const { userEnteredNumber } = route.params;
+  
 
   useEffect(() => {
     // Scroll to the end of the ScrollView when the component mounts
@@ -43,13 +44,18 @@ const Frame2 = () => {
         backgroundColor: "#FFD700",
       });
     }
+
+    // Generate a new random number for the next round
+    setRandomNumber(generateRandomNumber());
   };
+
+ 
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='white' />
+      <StatusBar barStyle="light-content" backgroundColor="white" />
       <View style={styles.headerContainer}>
-        <Text style={styles.headerContent}>Opponents 's Guess</Text>
+        <Text style={styles.headerContent}>Opponent's Guess</Text>
       </View>
 
       <View style={styles.number}>
@@ -62,35 +68,36 @@ const Frame2 = () => {
         <Text style={styles.optionText}>Lower or Higher?</Text>
 
         <View style={styles.plusOrSubstract}>
-          <View style={styles.lowerContainer}>
-            <Button
-              style={styles.lowerButtton}
-              title='-'
-              onPress={() => handleUserInput(false)}
-            ></Button>
-          </View>
+  <View style={styles.lowerContainer}>
+    <Button
+      title='-'
+      onPress={() => handleUserInput(false)}
+      color="#2D9596" // Set the color for the "Lower" button
+    />
+  </View>
 
-          <View style={styles.higherContainer}>
-            <Button
-              style={styles.higherButton}
-              title='+'
-              onPress={() => handleUserInput(true)}
-            ></Button>
-          </View>
-        </View>
+  <View style={styles.higherContainer}>
+    <Button
+      title='+'
+      onPress={() => handleUserInput(true)}
+      color="#2D9596" // Set the color for the "Higher" button
+    />
+  </View>
+</View>
       </View>
 
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.historyGuess}
-        contentContainerStyle={styles.historyContainer}
-      >
-        {opponentGuessHistory.map((guess, index) => (
-          <View key={index} style={styles.historyEntry}>
-            <Text key={index}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      
+  <ScrollView
+  ref={scrollViewRef}
+  style={styles.historyGuess}
+  contentContainerStyle={styles.historyContainer}
+>
+  {opponentGuessHistory.map((guess, index) => (
+    <View key={index} style={styles.historyEntry}>
+      <Text style={styles.historyText}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
+    </View>
+  ))}
+</ScrollView>
     </View>
   );
 };
@@ -99,12 +106,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
-    width: "100%",
-    height: "100%",
-    paddingTop: StatusBar.currentHeight || 0,
-    paddingTop: 70,
-    paddingRight: 52,
-    paddingLeft: 52,
+    padding: 20,
   },
   headerContainer: {
     alignItems: "center",
@@ -112,7 +114,6 @@ const styles = StyleSheet.create({
     height: 63,
     backgroundColor: "#FA7878",
     borderRadius: 30,
-    resizeMode: "contain",
   },
   headerContent: {
     color: "#000000",
@@ -121,6 +122,8 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: "bold",
+    fontSize: 24,
+    color: "#000",
   },
   number: {
     alignItems: "center",
@@ -128,64 +131,62 @@ const styles = StyleSheet.create({
     height: 63,
     backgroundColor: "#00FFFF",
     borderRadius: 30,
-    resizeMode: "contain",
-    marginTop: 30,
+    marginTop: 20,
   },
   optionContainer: {
     backgroundColor: "#F56C40",
-
-    width: "100%",
-    height: "25%",
+    padding: 20,
     marginTop: 20,
-    display: "flex",
     borderRadius: 30,
   },
   optionText: {
-    justifyContent: "center",
-    paddingLeft: "32%",
+    fontSize: 18,
     fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
   },
-  plusOrSubstract: {
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
+  plusOrSubtract: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+  },
+  lowerContainer: {
+    backgroundColor: "#dc3545",
+    borderRadius: 10,
+    paddingVertical: 10,
     paddingHorizontal: 20,
-    height: 60,
-    width: "90%",
   },
-  higherButton: {
+  higherContainer: {
     backgroundColor: "#28a745",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
-  lowerButtton: {
-    color: "#fff", // Set the color as needed
-    fontSize: 24, // Set the font size as needed
-    fontWeight: "bold",
-  },
-
   historyGuess: {
     backgroundColor: "#EFF396",
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 20,
     borderRadius: 30,
   },
-  historyGuess: {
-    backgroundColor: "#EFF396",
-    marginTop: 30,
-    marginBottom: 20,
-    borderRadius: 30, // Set the desired border-radius
-    overflow: "hidden", // Clip content outside the border-radius
-  },
   historyContainer: {
-    alignItems: "center", // Center the content horizontally
+    alignItems: "center",
+    justifyContent: "center",
   },
   historyEntry: {
-    backgroundColor: '#ffffff', // Background color for each history entry
-    borderRadius: 15, // Set the desired border-radius for each entry
-    padding: 10, // Add padding for better aesthetics
-    marginVertical: 5, // Add vertical margin between entries
-    width: '80%', // Set a specific width for each entry
+    backgroundColor: "#ffffff",
+    borderRadius: 15,
+    padding: 10,
+    marginVertical: 10,
+    width: "80%",
+    alignSelf: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-});
-
+  historyText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+}
+)
 export default Frame2;

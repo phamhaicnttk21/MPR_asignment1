@@ -1,13 +1,20 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Image, Button, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { Audio } from "expo-av";
 
 const Frame1 = () => {
   const [number, setNumber] = useState("");
 
   const navigation = useNavigation();
+  const [isMuted, setIsMuted] = useState(false);
+  const soundObject = new Audio.Sound();
+
+  const toggleMute = async () => {
+    await soundObject.setIsMutedAsync(!isMuted);
+    setIsMuted(!isMuted);
+  };
   let confirm = () => {
     if (number) {
       navigation.navigate("Frame2", { userEnteredNumber: number });
@@ -31,9 +38,26 @@ const Frame1 = () => {
     setNumber(newText);
   };
 
-  
-  
-  
+  useEffect(() => {
+    // Load and play background music when the component mounts
+    const playBackgroundMusic = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../assets/river.mp3")
+      );
+      await sound.setIsLoopingAsync(true);
+      await sound.playAsync();
+    };
+
+    playBackgroundMusic();
+
+    // Stop the music when the component is unmounted
+    return async () => {
+      const sound = await Audio.Sound.createAsync(
+        require("../assets/river.mp3")
+      );
+      await sound.stopAsync();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -77,6 +101,13 @@ const Frame1 = () => {
         <Image
           source={require("../assets/disguised.png")}
           style={styles.disguised}
+        />
+      </View>
+
+      <View style = {styles.muteContainer}>
+      <Image
+          source={require("../assets/mute.png")}
+          style={styles.mute}
         />
       </View>
     </View>
