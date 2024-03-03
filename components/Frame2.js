@@ -1,6 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Text, Button, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  ScrollView,
+  ToastAndroid,
+} from "react-native";
 import Toast, { ToastMessage } from "react-native-toast-message";
 import { useRoute } from "@react-navigation/native";
 import { Audio } from "expo-av";
@@ -26,25 +33,42 @@ const Frame2 = () => {
   // handle toast message
   const handleUserInput = (isHigher) => {
     setOpponentGuessHistory((prevHistory) => [...prevHistory, randomNumber]);
-
-    if (
+  
+    if (randomNumber === userEnteredNumber) {
+      if (isHigher) {
+        setTimeout(() => {
+        ToastAndroid.show("Oh no. Please try again.", ToastAndroid.SHORT);
+        // Optionally, you can take additional actions for the incorrect "Bingo" case
+            
+        }, 500);
+      } else {
+        setTimeout(() => {
+        ToastAndroid.show("Excellent", ToastAndroid.SHORT);
+            
+      }, 500);
+        // Optionally, you can customize the success Toast
+      }
+    } else if (
       (isHigher && randomNumber > userEnteredNumber) ||
       (!isHigher && randomNumber < userEnteredNumber)
     ) {
+      setTimeout(() => {
       // User made the correct choice
-      Toast.show({
-        type: "success",
-        text1: "Excellent",
-        backgroundColor: "#28a745",
-      });
+      ToastAndroid.show("Excellent", ToastAndroid.SHORT);
+          
+      }, 500);
+      // Optionally, you can customize the success Toast
     } else {
       // User made the wrong choice
-      Toast.show({
-        type: "error",
-        text1: "Wrong option. Please try again",
-        backgroundColor: "#FFD700",
-      });
+      setTimeout(() => {
+      ToastAndroid.show("Wrong option. Please try again", ToastAndroid.SHORT);
+      // Optionally, you can customize the error Toast  
+      }, 500);
     }
+      
+    
+  
+  
 
     // Generate a new random number for the next round
     setRandomNumber(generateRandomNumber());
@@ -54,6 +78,20 @@ const Frame2 = () => {
   const tryAgain = () => {
     navigation.navigate("Frame1");
   };
+  const handleBingo = () => {
+    if (randomNumber === userEnteredNumber) {
+      // User guessed correctly
+      setTimeout(() => {
+        ToastAndroid.show("Bingo! You guessed it right!", ToastAndroid.SHORT);
+      }, 500);
+    } else {
+      // User pressed "Bingo" button, but the guess is incorrect
+      setTimeout(() => {
+        ToastAndroid.show("Wrong option. Please try again.", ToastAndroid.SHORT);
+      }, 500);
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -74,7 +112,7 @@ const Frame2 = () => {
         <View style={styles.plusOrSubstract}>
           <View style={styles.lowerContainer}>
             <Button
-              title='-'
+              title='Lower'
               onPress={() => handleUserInput(false)}
               color='#2D9596' // Set the color for the "Lower" button
             />
@@ -82,9 +120,17 @@ const Frame2 = () => {
 
           <View style={styles.higherContainer}>
             <Button
-              title='+'
+              title='Higher'
               onPress={() => handleUserInput(true)}
               color='#2D9596' // Set the color for the "Higher" button
+            />
+          </View>
+          <View style={styles.bingoButtonContainer}>
+            <Button
+              title='Bingo'
+              onPress={handleBingo}
+              style={styles.bingoButton}
+              color='#2D9596'
             />
           </View>
         </View>
@@ -105,7 +151,7 @@ const Frame2 = () => {
       </ScrollView>
 
       <View style={styles.tryAgain}>
-        <Button title='Try again' onPress={tryAgain} ></Button>
+        <Button title='Try again' onPress={tryAgain}></Button>
       </View>
     </View>
   );
@@ -164,12 +210,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    marginTop: 10,
   },
   higherContainer: {
     backgroundColor: "#28a745",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  bingoButtonContainer: {
+    backgroundColor: "#28a745",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
   },
   historyGuess: {
     backgroundColor: "#EFF396",
