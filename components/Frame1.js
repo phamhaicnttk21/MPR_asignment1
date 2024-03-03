@@ -85,63 +85,65 @@ const Frame1 = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='white' />
+      <LinearGradient style={styles.gradient} colors={["black", "cyan"]}>
+        <StatusBar barStyle='light-content' backgroundColor='white' />
 
-      {/* Header container */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerContent}>Mini-Game App</Text>
-        <Image style={styles.image} source={require("../assets/game.png")} />
-      </View>
+        {/* Header container */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerContent}>Mini-Game App</Text>
+          <Image style={styles.image} source={require("../assets/game.png")} />
+        </View>
 
-      {/* Text container */}
-      <View style={styles.textContainer}>
-        <Text style={styles.textContent}>Enter Your Number:</Text>
-      </View>
+        {/* Text container */}
+        <View style={styles.textContainer}>
+          <Text style={styles.textContent}>Enter Your Number:</Text>
+        </View>
 
-      {/* Input container */}
-      <View style={styles.enterContainer}>
-        <TextInput
-          onChangeText={(text) => onChanged(text)}
-          style={styles.input}
-          value={number}
-          keyboardType='numeric'
-          maxLength={2}
-        />
-      </View>
-
-      {/* Note container */}
-      <View style={styles.noteContainer}>
-        <Text style={styles.note}>
-          *Note: number in the range from 01 to 99
-        </Text>
-      </View>
-
-      {/* Confirm button */}
-      <View style={styles.button}>
-        <Button onPress={() => confirm()} title='Confirm' />
-      </View>
-
-      {/* Disguised image container */}
-      <View style={styles.disguisedContainer}>
-        <Image
-          source={require("../assets/disguised.png")}
-          style={styles.disguised}
-        />
-      </View>
-
-      {/* Mute icon container */}
-      <View style={styles.muteContainer}>
-        <TouchableOpacity onPress={toggleMute}>
-          <Image
-            source={
-              isMuted
-                ? require("../assets/mute.png")
-                : require("../assets/mute.png")
-            }
-            style={styles.mute}
+        {/* Input container */}
+        <View style={styles.enterContainer}>
+          <TextInput
+            onChangeText={(text) => onChanged(text)}
+            style={styles.input}
+            value={number}
+            keyboardType='numeric'
+            maxLength={2}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+
+        {/* Note container */}
+        <View style={styles.noteContainer}>
+          <Text style={styles.note}>
+            *Note: number in the range from 01 to 99
+          </Text>
+        </View>
+
+        {/* Confirm button */}
+        <View style={styles.button}>
+          <Button onPress={() => confirm()} title='Confirm' />
+        </View>
+
+        {/* Disguised image container */}
+        <View style={styles.disguisedContainer}>
+          <Image
+            source={require("../assets/disguised.png")}
+            style={styles.disguised}
+          />
+        </View>
+
+        {/* Mute icon container */}
+        <View style={styles.muteContainer}>
+          <TouchableOpacity onPress={toggleMute}>
+            <Image
+              source={
+                isMuted
+                  ? require("../assets/mute.png")
+                  : require("../assets/mute.png")
+              }
+              style={styles.mute}
+            />
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     </View>
   );
 };
@@ -150,13 +152,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
-
     width: "100%",
     height: "100%",
     paddingTop: StatusBar.currentHeight || 0,
     paddingTop: 70,
     paddingRight: 52,
     paddingLeft: 52,
+  },
+  gradient: {
+    marginBottom:"20%",
+    marginTop:10,
+    borderRadius:20,
+    opacity:0.96,
+
+    
+    
   },
   headerContainer: {
     alignItems: "center",

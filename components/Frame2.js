@@ -4,13 +4,14 @@ import { View, StyleSheet, Text, Button, ScrollView } from "react-native";
 import Toast, { ToastMessage } from "react-native-toast-message";
 import { useRoute } from "@react-navigation/native";
 import { Audio } from "expo-av";
+import { useNavigation } from "@react-navigation/native";
 const Frame2 = () => {
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
   const [opponentGuessHistory, setOpponentGuessHistory] = useState([]);
   const scrollViewRef = useRef();
   const route = useRoute();
   const { userEnteredNumber } = route.params;
-  
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Scroll to the end of the ScrollView when the component mounts
@@ -49,11 +50,14 @@ const Frame2 = () => {
     setRandomNumber(generateRandomNumber());
   };
 
- 
+  // tryAgain
+  const tryAgain = () => {
+    navigation.navigate("Frame1");
+  };
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="white" />
+      <StatusBar barStyle='light-content' backgroundColor='white' />
       <View style={styles.headerContainer}>
         <Text style={styles.headerContent}>Opponent's Guess</Text>
       </View>
@@ -68,36 +72,41 @@ const Frame2 = () => {
         <Text style={styles.optionText}>Lower or Higher?</Text>
 
         <View style={styles.plusOrSubstract}>
-  <View style={styles.lowerContainer}>
-    <Button
-      title='-'
-      onPress={() => handleUserInput(false)}
-      color="#2D9596" // Set the color for the "Lower" button
-    />
-  </View>
+          <View style={styles.lowerContainer}>
+            <Button
+              title='-'
+              onPress={() => handleUserInput(false)}
+              color='#2D9596' // Set the color for the "Lower" button
+            />
+          </View>
 
-  <View style={styles.higherContainer}>
-    <Button
-      title='+'
-      onPress={() => handleUserInput(true)}
-      color="#2D9596" // Set the color for the "Higher" button
-    />
-  </View>
-</View>
+          <View style={styles.higherContainer}>
+            <Button
+              title='+'
+              onPress={() => handleUserInput(true)}
+              color='#2D9596' // Set the color for the "Higher" button
+            />
+          </View>
+        </View>
       </View>
 
-      
-  <ScrollView
-  ref={scrollViewRef}
-  style={styles.historyGuess}
-  contentContainerStyle={styles.historyContainer}
->
-  {opponentGuessHistory.map((guess, index) => (
-    <View key={index} style={styles.historyEntry}>
-      <Text style={styles.historyText}>{`Opponent's Guess ${index + 1}: ${guess}`}</Text>
-    </View>
-  ))}
-</ScrollView>
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.historyGuess}
+        contentContainerStyle={styles.historyContainer}
+      >
+        {opponentGuessHistory.map((guess, index) => (
+          <View key={index} style={styles.historyEntry}>
+            <Text style={styles.historyText}>{`Opponent's Guess ${
+              index + 1
+            }: ${guess}`}</Text>
+          </View>
+        ))}
+      </ScrollView>
+
+      <View style={styles.tryAgain}>
+        <Button title='Try again' onPress={tryAgain} ></Button>
+      </View>
     </View>
   );
 };
@@ -187,6 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-}
-)
+  tryAgain: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 export default Frame2;
