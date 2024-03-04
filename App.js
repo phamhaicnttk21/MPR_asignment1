@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Frame2 from "./components/Frame2";
 import Frame1 from "./components/Frame1";
 import Frame0 from "./components/Frame0";
+import Frame3 from "./components/Frame3";
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
@@ -15,7 +16,7 @@ export default function App() {
         <Stack.Screen name="Frame0" component={Frame0}/>
           <Stack.Screen name='Frame1' component={Frame1} />
           <Stack.Screen name="Frame2" component={Frame2} />
-          
+          <Stack.Screen name="Frame3" component={Frame3}/>
         </Stack.Navigator>
       </NavigationContainer>
     // </View>

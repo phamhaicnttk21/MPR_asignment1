@@ -119,7 +119,7 @@ const Frame1 = () => {
 
         {/* Confirm button */}
         <View style={styles.button}>
-          <Button onPress={() => confirm()} title='Confirm' />
+          <Button onPress={() => confirm()} title='Confirm' color='#FF914D' />
         </View>
 
         {/* Disguised image container */}
@@ -160,13 +160,10 @@ const styles = StyleSheet.create({
     paddingLeft: 52,
   },
   gradient: {
-    marginBottom:"20%",
-    marginTop:10,
-    borderRadius:20,
-    opacity:0.96,
-
-    
-    
+    marginBottom: "20%",
+    marginTop: 10,
+    borderRadius: 20,
+    opacity: 0.96,
   },
   headerContainer: {
     alignItems: "center",

@@ -1,101 +1,95 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Button,
-  ScrollView,
-  ToastAndroid,
-} from "react-native";
-import Toast, { ToastMessage } from "react-native-toast-message";
-import { useRoute } from "@react-navigation/native";
-import { Audio } from "expo-av";
-import { useNavigation } from "@react-navigation/native";
+import { View, StyleSheet, Text, Button, ScrollView, ToastAndroid } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import Frame3 from "./Frame3";
 const Frame2 = () => {
   const [randomNumber, setRandomNumber] = useState(generateRandomNumber());
   const [opponentGuessHistory, setOpponentGuessHistory] = useState([]);
   const scrollViewRef = useRef();
   const route = useRoute();
-  const { userEnteredNumber } = route.params;
   const navigation = useNavigation();
+  const { userEnteredNumber } = route.params;
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [isGameWon, setIsGameWon] = useState(false);
 
   useEffect(() => {
-    // Scroll to the end of the ScrollView when the component mounts
     scrollViewRef.current.scrollToEnd({ animated: true });
-  }, [opponentGuessHistory]);
+  
+    if (opponentGuessHistory.length === 8) {
+      const hasCorrectGuess = opponentGuessHistory.some(guess => guess === userEnteredNumber);
+  
+      if (hasCorrectGuess) {
+        setIsGameWon(true);
+      } else {
+        setIsGameWon(false);
+      }
+  
+      setIsGameOver(true);
+    } else if (opponentGuessHistory.some(guess => guess === userEnteredNumber)) {
+      setIsGameOver(true);
+      setIsGameWon(true);
+    }
+  }, [opponentGuessHistory, userEnteredNumber]);
 
-  // handle random number
   function generateRandomNumber() {
     return Math.floor(Math.random() * 99) + 1;
   }
 
-  // handle toast message
   const handleUserInput = (isHigher) => {
+    if (opponentGuessHistory.length >= 8) {
+      // Don't allow more guesses if 8 turns are reached
+      return;
+    }
+
     setOpponentGuessHistory((prevHistory) => [...prevHistory, randomNumber]);
-  
+
     if (randomNumber === userEnteredNumber) {
       if (isHigher) {
-        setTimeout(() => {
-        ToastAndroid.show("Oh no. Please try again.", ToastAndroid.SHORT);
-        // Optionally, you can take additional actions for the incorrect "Bingo" case
-            
-        }, 500);
+        showToast("Oh no. Please try again.");
       } else {
-        setTimeout(() => {
-        ToastAndroid.show("Excellent", ToastAndroid.SHORT);
-            
-      }, 500);
-        // Optionally, you can customize the success Toast
+        showToast("Excellent");
       }
     } else if (
       (isHigher && randomNumber > userEnteredNumber) ||
       (!isHigher && randomNumber < userEnteredNumber)
     ) {
-      setTimeout(() => {
-      // User made the correct choice
-      ToastAndroid.show("Excellent", ToastAndroid.SHORT);
-          
-      }, 500);
-      // Optionally, you can customize the success Toast
+      showToast("Excellent");
     } else {
-      // User made the wrong choice
-      setTimeout(() => {
-      ToastAndroid.show("Wrong option. Please try again", ToastAndroid.SHORT);
-      // Optionally, you can customize the error Toast  
-      }, 500);
+      showToast("Wrong option. Please try again");
     }
-      
-    
-  
-  
 
-    // Generate a new random number for the next round
     setRandomNumber(generateRandomNumber());
   };
 
-  // tryAgain
   const tryAgain = () => {
     navigation.navigate("Frame1");
   };
+
+  const showToast = (message) => {
+    setTimeout(() => {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    }, 500);
+  };
+
+  const navigateToResult = () => {
+    navigation.navigate("Frame3", { isGameWon });
+  };
+
   const handleBingo = () => {
     if (randomNumber === userEnteredNumber) {
-      // User guessed correctly
-      setTimeout(() => {
-        ToastAndroid.show("Bingo! You guessed it right!", ToastAndroid.SHORT);
-      }, 500);
-    } else {
-      // User pressed "Bingo" button, but the guess is incorrect
-      setTimeout(() => {
-        ToastAndroid.show("Wrong option. Please try again.", ToastAndroid.SHORT);
-      }, 500);
+      setIsGameOver(true);
+      setIsGameWon(true);
+      navigateToResult();
     }
   };
-  
+
+  const handleGameOver = () => {
+    navigation.navigate("Frame3", { isGameWon: isGameWon });
+  };
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='white' />
       <View style={styles.headerContainer}>
         <Text style={styles.headerContent}>Opponent's Guess</Text>
       </View>
@@ -109,12 +103,12 @@ const Frame2 = () => {
       <View style={styles.optionContainer}>
         <Text style={styles.optionText}>Lower or Higher?</Text>
 
-        <View style={styles.plusOrSubstract}>
+        <View style={styles.plusOrSubtract}>
           <View style={styles.lowerContainer}>
             <Button
               title='Lower'
               onPress={() => handleUserInput(false)}
-              color='#2D9596' // Set the color for the "Lower" button
+              color='#2D9596'
             />
           </View>
 
@@ -122,9 +116,10 @@ const Frame2 = () => {
             <Button
               title='Higher'
               onPress={() => handleUserInput(true)}
-              color='#2D9596' // Set the color for the "Higher" button
+              color='#2D9596'
             />
           </View>
+
           <View style={styles.bingoButtonContainer}>
             <Button
               title='Bingo'
@@ -149,6 +144,20 @@ const Frame2 = () => {
           </View>
         ))}
       </ScrollView>
+
+      {isGameOver && (
+        <View style={styles.gameOverContainer}>
+          <Text style={styles.gameOverText}>
+            {isGameWon ? "You Win!" : "You Lose!"}
+          </Text>
+          <Button
+            title='Continue'
+            onPress={navigateToResult}
+            color='#D83E38'
+            marginBottom='40px'
+          />
+        </View>
+      )}
 
       <View style={styles.tryAgain}>
         <Button title='Try again' onPress={tryAgain}></Button>
