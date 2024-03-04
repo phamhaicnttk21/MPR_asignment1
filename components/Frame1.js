@@ -30,10 +30,12 @@ const Frame1 = () => {
   const toggleMute = async () => {
     if (isMuted) {
       // If currently muted, play the background music
+      await soundObject.setIsMutedAsync(false);
       await soundObject.playAsync();
     } else {
       // If currently unmuted, stop the background music
       await soundObject.stopAsync();
+      await soundObject.setIsMutedAsync(true);
     }
 
     // Toggle the mute status
