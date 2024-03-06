@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: "20%",
     marginTop: 10,
     borderRadius: 20,
-    opacity: 0.96,
+    opacity: 0.96
   },
   headerContainer: {
     alignItems: "center",
